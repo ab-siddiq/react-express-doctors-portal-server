@@ -44,8 +44,13 @@ async function run() {
     //post or insert appointment
     app.post("/appointment", async (req, res) => {
       const appointment = req.body;
+      const query = {reatment: appointment.treatmentFor, date: appointment.date, patient: appointment.name};
+      const exists = await appointmentCollection.findOne(query);
+      if(exists){
+        return res.send({success: false, appointment: exists})
+      }
       const result = await appointmentCollection.insertOne(appointment);
-      res.send(result);
+      res.send({success: true,result});
     });
     //fetch or get appointment
     app.get("/appointments", async (req, res) => {
