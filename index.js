@@ -24,6 +24,7 @@ async function run() {
     const userCollection = client.db("doctorsportal").collection("users");
     const appointmentCollection = client.db("doctorsportal").collection("appointments");
     console.log("connected 1");
+
     //get or fetch user
     app.get("/user", async (req, res) => {
       const query = {};
@@ -31,6 +32,7 @@ async function run() {
       const users = await cursor.toArray();
       res.send(users);
     });
+
     //post or insert user
     app.post("/user", async (req, res) => {
       const user = req.body;
@@ -41,17 +43,28 @@ async function run() {
       const result = await userCollection.insertOne(doc);
       res.send(result);
     });
+
     //post or insert appointment
+    // check/prevent mulitple appointment
     app.post("/appointment", async (req, res) => {
       const appointment = req.body;
-      const query = {reatment: appointment.treatmentFor, date: appointment.date, patient: appointment.name};
+      console.log('op',appointment);
+      const query = {
+        appointmentFor: appointment.appointmentFor,
+        date: appointment.date,
+        patient: appointment.patient,
+      };
+      console.log('query',query)
       const exists = await appointmentCollection.findOne(query);
+      console.log(exists)
       if(exists){
         return res.send({success: false, appointment: exists})
       }
+
       const result = await appointmentCollection.insertOne(appointment);
       res.send({success: true,result});
     });
+
     //fetch or get appointment
     app.get("/appointments", async (req, res) => {
       const query = {};
