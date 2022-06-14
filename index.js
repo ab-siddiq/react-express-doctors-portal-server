@@ -55,6 +55,30 @@ async function run() {
       res.send(services);
     });
 
+    //available services & appointments
+    app.get("/available", async (req, res) => {
+      const date = req.body.date || "Jun 14, 2022";
+      //1 get all services
+      const services = await serviceCollection.find().toArray();
+      // 2 get appointment on particular date
+      const query = { date: date };
+      // console.log(query)
+      const appointments = await appointmentCollection.find(query).toArray();
+      // console.log(appointments)
+      // for each sercvices, find appointments for service
+      services.forEach((service) => {
+        const serviceAppointments = appointments.filter(
+          (appointment) => appointment.appointmentFor === service.name
+        );
+        // console.log(serviceAppointments);
+        service.appointed = serviceAppointments.map((serviceAppointment) =>
+           serviceAppointment.slot
+        );
+          
+      });
+      res.send(services);
+    });
+
     //post or insert appointment
     // check/prevent mulitple appointment
     app.post("/appointment", async (req, res) => {
