@@ -22,7 +22,10 @@ async function run() {
   try {
     await client.connect();
     const userCollection = client.db("doctorsportal").collection("users");
-    const appointmentCollection = client.db("doctorsportal").collection("appointments");
+    const serviceCollection = client.db("doctorsportal").collection("services");
+    const appointmentCollection = client
+      .db("doctorsportal")
+      .collection("appointments");
     console.log("connected 1");
 
     //get or fetch user
@@ -44,25 +47,33 @@ async function run() {
       res.send(result);
     });
 
+    //fetch or get services
+    app.get("/services", async (req, res) => {
+      const query = {};
+      const cursor = serviceCollection.find(query);
+      const services = await cursor.toArray();
+      res.send(services);
+    });
+
     //post or insert appointment
     // check/prevent mulitple appointment
     app.post("/appointment", async (req, res) => {
       const appointment = req.body;
-      console.log('op',appointment);
+      console.log("op", appointment);
       const query = {
         appointmentFor: appointment.appointmentFor,
         date: appointment.date,
         patient: appointment.patient,
       };
-      console.log('query',query)
+      console.log("query", query);
       const exists = await appointmentCollection.findOne(query);
-      console.log(exists)
-      if(exists){
-        return res.send({success: false, appointment: exists})
+      console.log(exists);
+      if (exists) {
+        return res.send({ success: false, appointment: exists });
       }
 
       const result = await appointmentCollection.insertOne(appointment);
-      res.send({success: true,result});
+      res.send({ success: true, result });
     });
 
     //fetch or get appointment
