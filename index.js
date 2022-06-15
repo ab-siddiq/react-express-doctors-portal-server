@@ -57,7 +57,7 @@ async function run() {
 
     //available services & appointments
     app.get("/available", async (req, res) => {
-      const date = req.body.date || "Jun 14, 2022";
+      const date = req.query.date;
       //1 get all services
       const services = await serviceCollection.find().toArray();
       // 2 get appointment on particular date
@@ -75,7 +75,8 @@ async function run() {
           serviceAppointment.slot
         );
 
-        service.available = service.slots.filter(slot=> !appointed.includes(slot));
+        const available = service.slots.filter(slot=> !appointed.includes(slot));
+        service.slots = available;
       });
       res.send(services);
     });
