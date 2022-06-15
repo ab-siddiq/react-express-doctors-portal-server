@@ -80,12 +80,19 @@ async function run() {
       });
       res.send(services);
     });
+    // //get appointment
+    // app.get("/appointment",async(req,res)=>{
+    //   const patient = req.query.patient;
+    //   const query = {patient:patient};
+    //   const appointments = await appointmentCollection.find(query).toArray();
+    //   res.send(appointments)
+    // })
 
     //post or insert appointment
     // check/prevent mulitple appointment
     app.post("/appointment", async (req, res) => {
       const appointment = req.body;
-      console.log("op", appointment);
+      // console.log("op", appointment);
       const query = {
         appointmentFor: appointment.appointmentFor,
         date: appointment.date,
@@ -104,6 +111,8 @@ async function run() {
 
     //fetch or get appointment
     app.get("/appointments", async (req, res) => {
+      const patient = req.body;
+      console.log(patient);
       const query = {};
       const cursor = appointmentCollection.find(query);
       const appointments = await cursor.toArray();
