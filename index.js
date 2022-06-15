@@ -71,10 +71,11 @@ async function run() {
           (appointment) => appointment.appointmentFor === service.name
         );
         // console.log(serviceAppointments);
-        service.appointed = serviceAppointments.map((serviceAppointment) =>
-           serviceAppointment.slot
+        const appointed = serviceAppointments.map((serviceAppointment) =>
+          serviceAppointment.slot
         );
-          
+
+        service.available = service.slots.filter(slot=> !appointed.includes(slot));
       });
       res.send(services);
     });
