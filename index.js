@@ -89,7 +89,8 @@ async function run() {
     // })
     app.get("/appointment", async (req,res)=>{
       const patient = req.query.patient;
-      console.log(patient);
+      // console.log(patient);
+      console.log('patient',req.query.patient);
       const query = { patient: patient };
       // console.log(query)
       const appointments = await appointmentCollection.find(query).toArray();
@@ -106,9 +107,9 @@ async function run() {
         date: appointment.date,
         patient: appointment.patient,
       };
-      console.log("query", query);
+      // console.log("query", query);
       const exists = await appointmentCollection.findOne(query);
-      console.log(exists);
+      // console.log(exists);
       if (exists) {
         return res.send({ success: false, appointment: exists });
       }
