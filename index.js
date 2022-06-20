@@ -23,9 +23,7 @@ async function run() {
     await client.connect();
     const userCollection = client.db("doctorsportal").collection("users");
     const serviceCollection = client.db("doctorsportal").collection("services");
-    const appointmentCollection = client
-      .db("doctorsportal")
-      .collection("appointments");
+    const appointmentCollection = client.db("doctorsportal").collection("appointments");
     console.log("connected 1");
 
     //get or fetch user
@@ -58,6 +56,7 @@ async function run() {
     //available services & appointments
     app.get("/available", async (req, res) => {
       const date = req.query.date;
+      // console.log(date)
       //1 get all services
       const services = await serviceCollection.find().toArray();
       // 2 get appointment on particular date
@@ -83,10 +82,19 @@ async function run() {
     // //get appointment
     // app.get("/appointment",async(req,res)=>{
     //   const patient = req.query.patient;
+    //   console.log(patient)
     //   const query = {patient:patient};
     //   const appointments = await appointmentCollection.find(query).toArray();
     //   res.send(appointments)
     // })
+    app.get("/appointment", async (req,res)=>{
+      const patient = req.query.patient;
+      console.log(patient);
+      const query = { patient: patient };
+      // console.log(query)
+      const appointments = await appointmentCollection.find(query).toArray();
+      res.send(appointments)
+    })
 
     //post or insert appointment
     // check/prevent mulitple appointment
