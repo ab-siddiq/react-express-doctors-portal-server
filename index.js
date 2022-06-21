@@ -94,6 +94,7 @@ async function run() {
       const query = { patient: patient };
       // console.log(query)
       const appointments = await appointmentCollection.find(query).toArray();
+      console.log('appointments',appointments)
       res.send(appointments)
     })
 
