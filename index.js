@@ -34,14 +34,14 @@ async function run() {
       res.send(users);
     });
 
-    //post or insert user
-    app.post("/user/:email", async (req, res) => {
+    //update or insert user
+    app.put("/user/:email", async (req, res) => {
       const email = req.params.email;
       const user = req.body;
       const options = {upsert: true};
       const filter = {email:email};
       updateDoc = {
-        $set: user
+        $set: user,
       };
       const result = await userCollection.updateOne(filter,updateDoc,options);
       res.send(result);
