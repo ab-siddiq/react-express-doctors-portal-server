@@ -21,9 +21,9 @@ const client = new MongoClient(uri, {
 //middle tear
 const verifyJWT = (req,res,next)=>{
 console.log('jwt');
-const authorization = req.headers.authorization;
-if(!authorization){
-  return res.status(401).send({message: "Unauthotized access!"})
+const authHeader = req.headers.authorization;
+if (!authHeader) {
+  return res.status(401).send({ message: "Unauthotized access!" });
 }
 const token = authHeader.split(' ')[1];
 jwt.verify(token,process.env.ACCESS_TOKEN_SECRET, function(err,decoded){
@@ -31,6 +31,7 @@ jwt.verify(token,process.env.ACCESS_TOKEN_SECRET, function(err,decoded){
     return res.status(403).send({message: 'Forbidden access!'})
   }
   req.decoded = decoded;
+  console.log(req.decoded.email,'decod')
   next();
 })
 }
@@ -110,6 +111,7 @@ async function run() {
     app.get("/appointment", verifyJWT,async (req,res)=>{
       const patient = req.query.patient;
       const decodedEmail = req.decoded.email;
+      console.log('d',decodedEmail);
       // const authorization = req.headers.authorization;
       // console.log(authorization)
       // console.log(patient);
