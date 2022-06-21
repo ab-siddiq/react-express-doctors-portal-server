@@ -18,7 +18,22 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
 });
-
+//middle tear
+const verifyJWT = (req,res,next)=>{
+console.log('jwt');
+const authorization = req.headers.authorization;
+if(!authorization){
+  return res.status(401).send({message: "Unauthotized access!"})
+}
+const token = authHeader.split(' ')[1];
+jwt.verify(token,process.env.ACCESS_TOKEN_SECRET, function(err,decoded){
+  if(err){
+    return res.status(403).send({message: 'Forbidden access!'})
+  }
+  req.decoded = decoded;
+  next();
+})
+}
 async function run() {
   try {
     await client.connect();
@@ -92,15 +107,20 @@ async function run() {
     //   const appointments = await appointmentCollection.find(query).toArray();
     //   res.send(appointments)
     // })
-    app.get("/appointment", async (req,res)=>{
+    app.get("/appointment", verifyJWT,async (req,res)=>{
       const patient = req.query.patient;
+      const decodedEmail = req.decoded.email;
+      // const authorization = req.headers.authorization;
+      // console.log(authorization)
       // console.log(patient);
-      console.log('patient',req.query.patient);
+      // console.log('patient',req.query.patient);
+      if(decodedEmail===patient){
       const query = { patient: patient };
-      // console.log(query)
       const appointments = await appointmentCollection.find(query).toArray();
-      console.log('appointments',appointments)
       res.send(appointments)
+      }else{
+        res.status(403).send({message: 'Acces denied!'})
+      }
     })
 
     //post or insert appointment
