@@ -35,13 +35,15 @@ async function run() {
     });
 
     //post or insert user
-    app.post("/user", async (req, res) => {
+    app.post("/user/:email", async (req, res) => {
+      const email = req.params.email;
       const user = req.body;
-      doc = {
-        user: "siddiq",
-        password: "123456",
+      const options = {upsert: true};
+      const filter = {email:email};
+      updateDoc = {
+        $set: user
       };
-      const result = await userCollection.insertOne(doc);
+      const result = await userCollection.updateOne(filter,updateDoc,options);
       res.send(result);
     });
 
