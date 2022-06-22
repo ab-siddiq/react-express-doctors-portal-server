@@ -51,16 +51,14 @@ async function run() {
 
     //get or fetch user
     app.get("/user", async (req, res) => {
-      const query = {};
-      const cursor = userCollection.find(query);
-      const users = await cursor.toArray();
+      const users = await userCollection.find().toArray();
       res.send(users);
     });
 
     //update or insert user
     app.put("/user/:email", async (req, res) => {
       const email = req.params.email;
-      console.log('login',email)
+      // console.log('login',email)
       const user = req.body;
       const options = { upsert: true };
       const filter = { email: email };
@@ -159,7 +157,7 @@ async function run() {
     //fetch or get appointment
     app.get("/appointments", async (req, res) => {
       const patient = req.body;
-      console.log(patient);
+      // console.log(patient);
       const query = {};
       const cursor = appointmentCollection.find(query);
       const appointments = await cursor.toArray();
