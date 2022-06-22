@@ -26,15 +26,17 @@ const verifyJWT = (req, res, next) => {
     return res.status(401).send({ message: "Unauthotized access!" });
   }
   const token = authHeader.split(" ")[1];
-  // console.log(token)
+  console.log(token)
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
     if (err) {
+      console.log(err,'error')
       return res.status(403).send({ message: "Forbidden access!" });
     }
-    console.log(decoded);
+    // console.log(decoded);
     req.decoded = decoded;
-    console.log(req.decoded.email, "decod");
+    console.log(req.decoded, "decod");
     next();
+    // console.log('decoded',req.decoded);
   });
 };
 async function run() {
@@ -58,6 +60,7 @@ async function run() {
     //update or insert user
     app.put("/user/:email", async (req, res) => {
       const email = req.params.email;
+      console.log('login',email)
       const user = req.body;
       const options = { upsert: true };
       const filter = { email: email };
@@ -65,12 +68,8 @@ async function run() {
         $set: user,
       };
       const result = await userCollection.updateOne(filter, updateDoc, options);
-      const token = jwt.sign(
-        { email: email },
-        process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "1h" }
-      );
-      console.log(token, "tok");
+      const token = jwt.sign({ email: email },  process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
+      // console.log(token, "tok");
       res.send({ result, token });
     });
 
@@ -121,8 +120,8 @@ async function run() {
     app.get("/appointment", verifyJWT, async (req, res) => {
       const patient = req.query.patient;
       const decodedEmail = req.decoded.email;
-      console.log("demail", decodedEmail);
-      console.log("patient", patient);
+      // console.log("demail", decodedEmail);
+      // console.log("patient", patient);
       // const authorization = req.headers.authorization;
       // console.log(authorization)
       // console.log(patient);
