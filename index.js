@@ -26,15 +26,15 @@ const verifyJWT = (req, res, next) => {
     return res.status(401).send({ message: "Unauthotized access!" });
   }
   const token = authHeader.split(" ")[1];
-  console.log(token)
+  // console.log(token)
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
     if (err) {
-      console.log(err,'error')
+      // console.log(err,'error')
       return res.status(403).send({ message: "Forbidden access!" });
     }
     // console.log(decoded);
     req.decoded = decoded;
-    console.log(req.decoded, "decod");
+    // console.log(req.decoded, "decod");
     next();
     // console.log('decoded',req.decoded);
   });
@@ -50,20 +50,49 @@ async function run() {
     console.log("connected 1");
 
     //get or fetch user
-    app.get("/user", async (req, res) => {
+    app.get("/user", verifyJWT,async (req, res) => {
       const users = await userCollection.find().toArray();
       res.send(users);
     });
+
+    //admin api
+    app.put("/user/admin/:email", async(req,res)=>{
+      const email = req.params.email;
+      const filter = {email:email};
+      updateDoc = {
+        $set: {
+          role: "admin",
+        }
+      }
+      const result = await userCollection.updateOne(filter,updateDoc);
+      res.send(result);
+    })
+    //change to normal user api
+    app.put("/user/user/:email", async(req,res)=>{
+      const email = req.params.email;
+      const filter = {email:email};
+      updateDoc = {
+        $set: {
+          role: "user",
+        }
+      }
+      const result = await userCollection.updateOne(filter,updateDoc);
+      res.send(result);
+    })
 
     //update or insert user
     app.put("/user/:email", async (req, res) => {
       const email = req.params.email;
       // console.log('login',email)
       const user = req.body;
+      console.log(user)
       const options = { upsert: true };
       const filter = { email: email };
       updateDoc = {
-        $set: user,
+        $set: {
+          user: user,
+          role: 'user',
+        },
       };
       const result = await userCollection.updateOne(filter, updateDoc, options);
       const token = jwt.sign({ email: email },  process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
