@@ -59,33 +59,49 @@ async function run() {
     app.put("/user/admin/:email", async(req,res)=>{
       const email = req.params.email;
       const filter = {email:email};
-      updateDoc = {
-        $set: {
-          role: "admin",
-        }
-      }
-      const result = await userCollection.updateOne(filter,updateDoc);
-      res.send(result);
+      // const requester = req.decoded.email;
+      // const requesterAccount = await userCollection.findOne({ email: requester });
+      // if(requesterAccount.role === 'admin'){
+         updateDoc = {
+           $set: {
+             role: "admin",
+           },
+         };
+         const result = await userCollection.updateOne(filter, updateDoc);
+         res.send(result);
+      // }else{
+      //   return res.status(403).send({message: 'forbidden!'});
+      // }
+     
     })
     //change to normal user api
     app.put("/user/user/:email", async(req,res)=>{
       const email = req.params.email;
       const filter = {email:email};
-      updateDoc = {
-        $set: {
-          role: "user",
-        }
-      }
-      const result = await userCollection.updateOne(filter,updateDoc);
-      res.send(result);
+      // const requester = req.decoded.email;
+      // console.log(requester, "ddd", email);
+      // const requesterAccount = await userCollection.findOne({
+      //   email: requester,
+      // });
+      // if (requesterAccount.role === "admin") {
+        updateDoc = {
+          $set: {
+            role: "user",
+          },
+        };
+        const result = await userCollection.updateOne(filter, updateDoc);
+        res.send(result);
+      // } else {
+      //   return res.status(403).send({ message: "forbidden!" });
+      // }
     })
-
+ 
     //update or insert user
     app.put("/user/:email", async (req, res) => {
       const email = req.params.email;
       // console.log('login',email)
       const user = req.body;
-      console.log(user)
+      // console.log(user)
       const options = { upsert: true };
       const filter = { email: email };
       updateDoc = {
